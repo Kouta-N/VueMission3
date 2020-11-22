@@ -1,104 +1,123 @@
 <template>
   <div id="app">
     <h1>ToDoリスト</h1>
-      <input type="radio" 
+    <input
+      type="radio"
       id="all"
-      v-on:change="displayAll"
-      v-model="condition" 
-      value="allDisplay">
-      <label>すべて</label>
-      <input type="radio"
+      v-model="condition"
+      value="allDisplay"
+      v-on:change="changeDisplay(condition)"
+    />
+    <label>すべて</label>
+    <input
+      type="radio"
       id="doing"
-      v-on:change="displayDoing"
-      v-model="condition" 
-      value="doingDisplay" >
-      <label>作業中</label>
-      <input type="radio" 
+      v-model="condition"
+      value="doingDisplay"
+      v-on:change="changeDisplay(condition)"
+    />
+    <label>作業中</label>
+    <input
+      type="radio"
       id="finish"
-      v-on:change="displayFinish"
-      v-model="condition" 
-      value="finishDisplay" >
-      <label>完了</label>
-      <br>
+      v-model="condition"
+      value="finishDisplay"
+      v-on:change="changeDisplay(condition)"
+    />
+    <label>完了</label>
+    <br />
     <table>
-        <th>ID</th>
-        <th>コメント</th>
-        <th>状態</th>
-        <tbody>
-          <tr v-for="task in tasks" :key="task.id" v-show="task.flag">
-            <td>{{ task.id }}</td>
-            <td>{{ task.comment }}</td>
-            <td class="state" v-show="flagState = true">
-               <button id="status" @click="changeTask(task)">{{ status[task.state].label }}</button>&nbsp;
-              <button @click="delTask(task.id)">削除</button>  
-            </td>
-          </tr>
-        </tbody> 
+      <th>ID</th>
+      <th>コメント</th>
+      <th>状態</th>
+      <tbody>
+        <tr v-for="task in tasks" :key="task.id" v-show="task.flag">
+          <td>{{ task.id }}</td>
+          <td>{{ task.comment }}</td>
+          <td class="state">
+            <button id="status" @click="changeTask(task)">
+              {{ status[task.state].label }}</button
+            >&nbsp;
+            <button @click="delTask(task.id)">削除</button>
+          </td>
+        </tr>
+      </tbody>
     </table>
-      <h3>新規タスクの追加</h3>
-      <input type="text" v-model="inputTaskText">&nbsp;
-      <button v-on:click="addTask">追加</button>
+    <h3>新規タスクの追加</h3>
+    <input type="text" v-model="inputTaskText" />&nbsp;
+    <button v-on:click="addTask">追加</button>
   </div>
 </template>
 
 <script>
 export default {
   data: () => {
-    return{
+    return {
       condition: 'allDisplay',
       inputTaskText: '',
       buttonId: '',
       index: 0,
-      tasks:[],
+      tasks: [],
       delIndex: 0,
-      status: [
-        {label: '作業中'},
-        {label: '完了'},
-      ]
-    }
+      status: [{ label: '作業中' }, { label: '完了' }]
+    };
   },
-  methods:{
-    displayAll(){
-      for(this.index=0; this.index<this.tasks.length; this.index++){
+  methods: {
+    changeDisplay(conditionValue) {
+      if (conditionValue === 'allDisplay') {
+        for (this.index = 0; this.index < this.tasks.length; this.index++) {
           this.tasks[this.index].flag = true;
-      }
-    },
-    displayDoing(){
-      for(this.index=0; this.index<this.tasks.length; this.index++){
-        if(this.tasks[this.index].state !== 0){
-         this.tasks[this.index].flag = false;
-        }else{
-          this.tasks[this.index].flag = true;
-        }      
-      }
-    },
-    displayFinish(){
-      for(this.index=0; this.index<this.tasks.length; this.index++){
-        if(this.tasks[this.index].state !== 1){
-        this.tasks[this.index].flag = false;
-        }else{
-          this.tasks[this.index].flag = true;
+        }
+      } else if (conditionValue === 'doingDisplay') {
+        for (this.index = 0; this.index < this.tasks.length; this.index++) {
+          if (this.tasks[this.index].state !== 0) {
+            (this.tasks[this.index].flag = false);
+          } else {
+            this.tasks[this.index].flag = true;
+          }
+        }
+      } else {
+        for (this.index = 0; this.index < this.tasks.length; this.index++) {
+          if (this.tasks[this.index].state !== 1) {
+            this.tasks[this.index].flag = false;
+          } else {
+            this.tasks[this.index].flag = true;
+          }
         }
       }
     },
-    addTask(){
-        this.index = this.tasks.length+1;
-        if(this.condition !== 'finishDisplay'){
-          this.tasks.push( {id:this.index, comment:this.inputTaskText, state: 0, flag: true} );
-        }else{
-          this.tasks.push( {id:this.index, comment:this.inputTaskText, state: 0, flag: false} );
-        }
-        this.inputTaskText = '';
+    addTask() {
+      this.index = this.tasks.length + 1;
+      if (this.condition !== "finishDisplay") {
+        this.tasks.push({
+          id: this.index,
+          comment: this.inputTaskText,
+          state: 0,
+          flag: true
+        });
+      } else {
+        this.tasks.push({
+          id: this.index,
+          comment: this.inputTaskText,
+          state: 0,
+          flag: false
+        });
+      }
+      this.inputTaskText = "";
     },
-    delTask(delNum){
-      this.tasks.splice(delNum-1,1);
-      for(this.delIndex=delNum-1; this.delIndex<this.tasks.length; this.delIndex++){
-           this.$set(this.tasks[this.delIndex], 'id', this.delIndex+1);
+    delTask(delNum) {
+      this.tasks.splice(delNum - 1, 1);
+      for (
+        this.delIndex = delNum - 1;
+        this.delIndex < this.tasks.length;
+        this.delIndex++
+      ) {
+        this.$set(this.tasks[this.delIndex], "id", this.delIndex + 1);
       }
     },
     changeTask(tasks) {
-      tasks.state = !tasks.state ? 1 : 0
-    },
+      tasks.state = !tasks.state ? 1 : 0;
+    }
   }
 };
 </script>
