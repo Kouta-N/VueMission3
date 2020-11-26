@@ -88,7 +88,7 @@ export default {
     },
     addTask() {
       this.index = this.tasks.length + 1;
-      if (this.condition !== "finishDisplay") {
+      if (this.condition !== 'finishDisplay') {
         this.tasks.push({
           id: this.index,
           comment: this.inputTaskText,
@@ -103,7 +103,7 @@ export default {
           flag: false
         });
       }
-      this.inputTaskText = "";
+      this.inputTaskText = '';
     },
     delTask(delNum) {
       this.tasks.splice(delNum - 1, 1);
@@ -112,7 +112,7 @@ export default {
         this.delIndex < this.tasks.length;
         this.delIndex++
       ) {
-        this.$set(this.tasks[this.delIndex], "id", this.delIndex + 1);
+        this.$set(this.tasks[this.delIndex], 'id', this.delIndex + 1);
       }
     },
     changeTask(tasks) {
