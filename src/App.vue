@@ -1,29 +1,11 @@
 <template>
   <div id="app">
     <h1>ToDoリスト</h1>
-    <input
-      type="radio"
-      id="all"
-      v-model="condition"
-      value="allDisplay"
-      v-on:change="changeDisplay(condition)"
-    />
+    <input type="radio" id="all" v-model="condition" value="allDisplay" />
     <label>すべて</label>
-    <input
-      type="radio"
-      id="doing"
-      v-model="condition"
-      value="doingDisplay"
-      v-on:change="changeDisplay(condition)"
-    />
+    <input type="radio" id="doing" v-model="condition" value="doingDisplay" />
     <label>作業中</label>
-    <input
-      type="radio"
-      id="finish"
-      v-model="condition"
-      value="finishDisplay"
-      v-on:change="changeDisplay(condition)"
-    />
+    <input type="radio" id="finish" v-model="condition" value="finishDisplay" />
     <label>完了</label>
     <br />
     <table>
@@ -31,12 +13,12 @@
       <th>コメント</th>
       <th>状態</th>
       <tbody>
-        <tr v-for="task in tasks" :key="task.id" v-show="task.flag">
+        <tr v-for="(task, index) in showTasks" :key="index">
           <td>{{ task.id }}</td>
           <td>{{ task.comment }}</td>
           <td class="state">
             <button id="status" @click="changeTask(task)">
-              {{ status[task.state].label }}</button
+              {{ statusKeyLabel[task.state] }}</button
             >&nbsp;
             <button @click="delTask(task.id)">削除</button>
           </td>
@@ -55,69 +37,49 @@ export default {
     return {
       condition: 'allDisplay',
       inputTaskText: '',
-      buttonId: '',
-      index: 0,
       tasks: [],
-      delIndex: 0,
-      status: [{ label: '作業中' }, { label: '完了' }]
+      statusCode: { working: 1, complete: 2 },
+      statusKeyLabel: ['', '作業中', '完了']
     };
   },
+  computed: {
+    showTasks: function() {
+      switch (this.condition) {
+        case 'allDisplay':
+          return this.tasks;
+        case 'doingDisplay':
+          return this.tasks.filter(tasks => {
+            return tasks.state === this.statusCode.working;
+          });
+        case 'finishDisplay':
+          return this.tasks.filter(tasks => {
+            return tasks.state === this.statusCode.complete;
+          });
+        default:
+          return [];
+      }
+    }
+  },
   methods: {
-    changeDisplay(conditionValue) {
-      if (conditionValue === 'allDisplay') {
-        for (this.index = 0; this.index < this.tasks.length; this.index++) {
-          this.tasks[this.index].flag = true;
-        }
-      } else if (conditionValue === 'doingDisplay') {
-        for (this.index = 0; this.index < this.tasks.length; this.index++) {
-          if (this.tasks[this.index].state !== 0) {
-            (this.tasks[this.index].flag = false);
-          } else {
-            this.tasks[this.index].flag = true;
-          }
-        }
-      } else {
-        for (this.index = 0; this.index < this.tasks.length; this.index++) {
-          if (this.tasks[this.index].state !== 1) {
-            this.tasks[this.index].flag = false;
-          } else {
-            this.tasks[this.index].flag = true;
-          }
-        }
-      }
-    },
     addTask() {
-      this.index = this.tasks.length + 1;
-      if (this.condition !== 'finishDisplay') {
-        this.tasks.push({
-          id: this.index,
-          comment: this.inputTaskText,
-          state: 0,
-          flag: true
-        });
-      } else {
-        this.tasks.push({
-          id: this.index,
-          comment: this.inputTaskText,
-          state: 0,
-          flag: false
-        });
-      }
+      const index = this.tasks.length + 1;
+      this.tasks.push({
+        id: index,
+        comment: this.inputTaskText,
+        state: this.statusCode.working
+      });
       this.inputTaskText = '';
     },
     delTask(delNum) {
       this.tasks.splice(delNum - 1, 1);
-      for (
-        this.delIndex = delNum - 1;
-        this.delIndex < this.tasks.length;
-        this.delIndex++
-      ) {
-        this.$set(this.tasks[this.delIndex], 'id', this.delIndex + 1);
-      }
+      this.tasks.forEach((task, index) => {
+        this.$set(this.tasks[index], 'id', index + 1);
+      });
     },
     changeTask(tasks) {
-      tasks.state = !tasks.state ? 1 : 0;
-    }
+      const statusNum = tasks.state === this.statusCode.working ? this.statusCode.complete : this.statusCode.working;
+      tasks.state = statusNum;
+    },
   }
 };
 </script>
