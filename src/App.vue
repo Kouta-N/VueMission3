@@ -18,7 +18,7 @@
           <td>{{ task.comment }}</td>
           <td class="state">
             <button id="status" @click="changeTask(task)">
-              {{ statusKeyLabel[task.state] }}</button
+              {{statusKeyLabel[task.state]}}</button
             >&nbsp;
             <button @click="delTask(task.id)">削除</button>
           </td>
@@ -39,7 +39,7 @@ export default {
       inputTaskText: '',
       tasks: [],
       statusCode: { working: 1, complete: 2 },
-      statusKeyLabel: ['', '作業中', '完了']
+      statusKeyLabel: { 1: '作業中', 2: '完了' },
     };
   },
   computed: {
